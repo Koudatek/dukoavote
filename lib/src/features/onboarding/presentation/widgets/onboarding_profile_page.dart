@@ -1,6 +1,9 @@
+import 'package:dukoavote/src/features/onboarding/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dukoavote/src/core/theme/app_colors.dart';
+import 'package:go_router/go_router.dart';
+import 'package:dukoavote/src/core/routing/route_names.dart';
 
 class OnboardingProfilePage extends StatefulWidget {
   final void Function(String? gender, DateTime? birthDate) onValidate;
@@ -12,7 +15,7 @@ class OnboardingProfilePage extends StatefulWidget {
 
 class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
   String? _selectedGender;
-  int? _age;
+  //int? _age;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +68,17 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
                 borderRadius: BorderRadius.circular(15),
               ),
             ),
-            onPressed: _isValid ? () => widget.onValidate(_selectedGender, _birthDate) : null,
+            onPressed: _isValid ? () async {
+              widget.onValidate(_selectedGender, _birthDate);
+              // Sauvegarde locale du profil onboarding
+              await OnboardingLocalStorage.saveProfile(
+                gender: _selectedGender!,
+                birthDate: _birthDate!,
+              );
+              if (!mounted) return;
+              // Navigation après validation
+              context.go(RouteNames.main);
+            } : null,
             child: Text(
               "Valider",
               style: GoogleFonts.poppins(
@@ -241,7 +254,7 @@ class _GenderItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary.withOpacity(0.15) : Colors.grey.shade200,
+          color: selected ? AppColors.primary.withAlpha((0.15 * 255).toInt()) : Colors.grey.shade200,
           border: Border.all(
             color: selected ? AppColors.primary : Colors.transparent,
             width: 2,

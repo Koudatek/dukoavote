@@ -1,18 +1,16 @@
-import 'package:dukoavote/src/features/onboarding/domain/onboarding_preferences.dart';
+import 'package:dukoavote/src/src.dart';
 import 'package:flutter/material.dart';
-import '../screens/onboarding_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class OnboardingChecker extends StatefulWidget {
-  final Widget child; // L'app principale à afficher si onboarding terminé
-  const OnboardingChecker({super.key, required this.child});
+class OnboardingChecker extends ConsumerStatefulWidget {
+  const OnboardingChecker({super.key});
 
   @override
-  State<OnboardingChecker> createState() => _OnboardingCheckerState();
+  ConsumerState<OnboardingChecker> createState() => _OnboardingCheckerState();
 }
 
-class _OnboardingCheckerState extends State<OnboardingChecker> {
-  bool _isLoading = true;
-  bool _showOnboarding = false;
+class _OnboardingCheckerState extends ConsumerState<OnboardingChecker> {
+  bool? _hasCompletedOnboarding;
 
   @override
   void initState() {
@@ -21,34 +19,23 @@ class _OnboardingCheckerState extends State<OnboardingChecker> {
   }
 
   Future<void> _checkOnboardingStatus() async {
-    final isCompleted = await OnboardingPreferences.isOnboardingCompleted();
-    
+    final hasCompleted = await OnboardingLocalStorage.isOnboardingCompleted();
     setState(() {
-      _showOnboarding = !isCompleted;
-      _isLoading = false;
-    });
-  }
-
-  void _onOnboardingFinished() {
-    setState(() {
-      _showOnboarding = false;
+      _hasCompletedOnboarding = hasCompleted;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+    if (_hasCompletedOnboarding == null) {
+      // Affiche un écran blanc pendant la récupération
+      return const SizedBox.shrink();
     }
 
-    if (_showOnboarding) {
-      return OnboardingScreen(onFinish: _onOnboardingFinished);
+    if (_hasCompletedOnboarding!) {
+      return const MainApp();
+    } else {
+      return const OnboardingScreen();
     }
-
-    return widget.child;
   }
 } 

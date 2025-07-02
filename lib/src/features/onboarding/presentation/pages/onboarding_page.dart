@@ -1,12 +1,7 @@
-import 'package:dukoavote/src/core/theme/app_colors.dart';
-import 'package:dukoavote/src/features/onboarding/domain/onboarding_preferences.dart';
-import 'package:dukoavote/src/features/onboarding/presentation/widgets/onboarding_intro_page.dart';
-import 'package:dukoavote/src/features/onboarding/presentation/widgets/onboarding_why_page.dart';
-import 'package:dukoavote/src/features/onboarding/presentation/widgets/onboarding_privacy_page.dart';
-import 'package:dukoavote/src/features/onboarding/presentation/widgets/onboarding_ready_page.dart';
-import 'package:dukoavote/src/features/onboarding/presentation/widgets/onboarding_profile_page.dart';
+import 'package:dukoavote/src/core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../onboarding.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final VoidCallback? onFinish;
@@ -64,7 +59,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Future<void> _finishOnboarding() async {
     // Marquer l'onboarding comme terminé localement
-    await OnboardingPreferences.markOnboardingCompleted();
+    await OnboardingLocalStorage.markOnboardingCompleted();
     
     // Ici on pourrait passer les données du profil à la feature Auth plus tard
     widget.onFinish?.call();
@@ -84,7 +79,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 CircleAvatar(
                   radius: 20,
                   backgroundColor: Colors.transparent,
-                  child: Text("${_currentPage + 1}/${_pages.length}"),
+                  child: Text("${_currentPage + 1}/${_pages.length}", style: GoogleFonts.poppins(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -92,7 +91,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     elevation: 0,
                   ),
                   onPressed: _skipOnboarding,
-                  child: const Text("Passer"),
+                  child: Text("Passer", style: GoogleFonts.poppins(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.normal,
+                          fontSize: 15,
+                        ),),
                 ),
               ],
             ),
@@ -104,8 +107,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     _currentPage = value;
                   });
                 },
-                children: _pages,
                 physics: const NeverScrollableScrollPhysics(),
+                children: _pages,
               ),
             ),
             if (_currentPage < 4)
@@ -116,8 +119,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   children: [
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        side: _currentPage == 0 ? null : const BorderSide(),
+                        side: _currentPage == 0 ? null : const BorderSide(
+                          color: AppColors.primary
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
