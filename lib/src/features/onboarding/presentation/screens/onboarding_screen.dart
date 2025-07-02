@@ -1,4 +1,5 @@
 import 'package:dukoavote/src/core/theme/app_colors.dart';
+import 'package:dukoavote/src/features/onboarding/domain/onboarding_preferences.dart';
 import 'package:dukoavote/src/features/onboarding/presentation/widgets/onboarding_intro_page.dart';
 import 'package:dukoavote/src/features/onboarding/presentation/widgets/onboarding_why_page.dart';
 import 'package:dukoavote/src/features/onboarding/presentation/widgets/onboarding_privacy_page.dart';
@@ -18,11 +19,10 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _controller = PageController();
   int _currentPage = 0;
-  bool _profileCompleted = false;
 
-  // Pour stocker les infos du profil minimal
-  String? _gender;
-  DateTime? _age;
+  // Données temporaires pour la page de profil
+  String? _selectedGender;
+  DateTime? _birthDate;
 
   late final List<Widget> _pages;
 
@@ -30,17 +30,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void initState() {
     super.initState();
     _pages = [
-      OnboardingIntroPage(),
-      OnboardingWhyPage(),
-      OnboardingPrivacyPage(),
-      OnboardingReadyPage(),
+      const OnboardingIntroPage(),
+      const OnboardingWhyPage(),
+      const OnboardingPrivacyPage(),
+      const OnboardingReadyPage(),
       OnboardingProfilePage(
-        onValidate: (gender, age) {
-          setState(() {
-            _gender = gender;
-            _age = age;
-            _profileCompleted = true;
-          });
+        onValidate: (gender, birthDate) {
+          _selectedGender = gender;
+          _birthDate = birthDate;
           _finishOnboarding();
         },
       ),
@@ -65,18 +62,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _finishOnboarding();
   }
 
-  void _goToProfile() {
-    _controller.animateToPage(
-      4,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.ease,
-    );
-    setState(() {
-      _currentPage = 4;
-    });
-  }
-
-  void _finishOnboarding() {
+  Future<void> _finishOnboarding() async {
+    // Marquer l'onboarding comme terminé localement
+    await OnboardingPreferences.markOnboardingCompleted();
+    
+    // Ici on pourrait passer les données du profil à la feature Auth plus tard
     widget.onFinish?.call();
   }
 
@@ -114,8 +104,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     _currentPage = value;
                   });
                 },
-                physics: const NeverScrollableScrollPhysics(),
                 children: _pages,
+                physics: const NeverScrollableScrollPhysics(),
               ),
             ),
             if (_currentPage < 4)

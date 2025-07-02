@@ -10,8 +10,7 @@ class OnboardingReadyPage extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          //color: AppColors.background,
-          padding: EdgeInsets.only(top: 70,),
+          padding: const EdgeInsets.only(top: 70),
           child: Text(
             "C'est parti ! Répondez en un clic et découvrez ce que pense la communauté.",
             softWrap: true,

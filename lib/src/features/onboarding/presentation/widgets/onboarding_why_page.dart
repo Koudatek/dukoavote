@@ -10,16 +10,14 @@ class OnboardingWhyPage extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          //color: AppColors.background,
-          padding: EdgeInsets.only(top: 70,),
+          padding: const EdgeInsets.only(top: 70),
           child: Text(
-              "Vos réponses anonymes contribuent à des statistiques publiques et enrichissent le débat.",
-              softWrap: true,
-              style: GoogleFonts.poppins(
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-              ),
-            
+            "Vos réponses anonymes contribuent à des statistiques publiques et enrichissent le débat.",
+            softWrap: true,
+            style: GoogleFonts.poppins(
+              fontSize: 40,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         Lottie.asset('assets/animations/question.json', height: 180),

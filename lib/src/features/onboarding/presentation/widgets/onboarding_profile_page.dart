@@ -4,7 +4,7 @@ import 'package:dukoavote/src/core/theme/app_colors.dart';
 
 class OnboardingProfilePage extends StatefulWidget {
   final void Function(String? gender, DateTime? birthDate) onValidate;
-  const OnboardingProfilePage({super.key,required this.onValidate});
+  const OnboardingProfilePage({super.key, required this.onValidate});
 
   @override
   State<OnboardingProfilePage> createState() => _OnboardingProfilePageState();
@@ -12,18 +12,72 @@ class OnboardingProfilePage extends StatefulWidget {
 
 class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
   String? _selectedGender;
-  final List<FocusNode> _focusNodes = List.generate(8, (_) => FocusNode());
-  final List<TextEditingController> _controllers = List.generate(8, (_) => TextEditingController());
+  int? _age;
 
   @override
-  void dispose() {
-    for (final node in _focusNodes) {
-      node.dispose();
-    }
-    for (final controller in _controllers) {
-      controller.dispose();
-    }
-    super.dispose();
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 20),
+          Text(
+            "Pour mieux comprendre la communauté, peux-tu nous indiquer :",
+            style: GoogleFonts.poppins(fontSize: 26, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 32),
+          Text(
+            "Genre",
+            style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _GenderItem(
+                label: "Homme",
+                icon: Icons.man_outlined,
+                selected: _selectedGender == "Homme",
+                onTap: () => setState(() => _selectedGender = "Homme"),
+              ),
+              const SizedBox(width: 16),
+              _GenderItem(
+                label: "Femme",
+                icon: Icons.woman_outlined,
+                selected: _selectedGender == "Femme",
+                onTap: () => setState(() => _selectedGender = "Femme"),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+          Text(
+            "Date de naissance",
+            style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 12),
+          _buildDateInput(),
+          const SizedBox(height: 32),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              backgroundColor: AppColors.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+            ),
+            onPressed: _isValid ? () => widget.onValidate(_selectedGender, _birthDate) : null,
+            child: Text(
+              "Valider",
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   DateTime? get _birthDate {
@@ -41,6 +95,20 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
     return _selectedGender != null &&
       _controllers.every((c) => c.text.isNotEmpty) &&
       _birthDate != null;
+  }
+
+  final List<FocusNode> _focusNodes = List.generate(8, (_) => FocusNode());
+  final List<TextEditingController> _controllers = List.generate(8, (_) => TextEditingController());
+
+  @override
+  void dispose() {
+    for (final node in _focusNodes) {
+      node.dispose();
+    }
+    for (final controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 
   void _onFieldChanged(int index, String value) {
@@ -83,7 +151,7 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
                 );
               }),
             ),
-            Text("Jour", style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w500),)
+            Text("Jour", style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w500)),
           ],
         ),
         const SizedBox(width: 13),
@@ -114,7 +182,7 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
                 );
               }),
             ),
-            Text("Mois", style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w500),)
+            Text("Mois", style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w500)),
           ],
         ),
         const SizedBox(width: 13),
@@ -145,75 +213,10 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
                 );
               }),
             ),
-            Text("Année", style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w500),)
+            Text("Année", style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w500)),
           ],
         ),
       ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(height: 20,),
-            Text(
-              "Pour mieux comprendre la communauté, peux-tu nous indiquer :",
-              style: GoogleFonts.poppins(fontSize: 26, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 32),
-            Text(
-              "Genre",
-              style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _GenderItem(
-                  label: "Homme",
-                  icon: Icons.man_outlined,
-                  selected: _selectedGender == "Homme",
-                  onTap: () => setState(() => _selectedGender = "Homme"),
-                ),
-                const SizedBox(width: 16),
-                _GenderItem(
-                  label: "Femme",
-                  icon: Icons.woman_outlined,
-                  selected: _selectedGender == "Femme",
-                  onTap: () => setState(() => _selectedGender = "Femme"),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            Text(
-              "Date de naissance",
-              style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 12),
-            _buildDateInput(),
-            const SizedBox(height: 32),
-            ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        backgroundColor: AppColors.primary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                      onPressed:_isValid ? () => widget.onValidate(_selectedGender, _birthDate) : null,
-                      child: Text( "Valide",
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
-          ],
-        ),
     );
   }
 }

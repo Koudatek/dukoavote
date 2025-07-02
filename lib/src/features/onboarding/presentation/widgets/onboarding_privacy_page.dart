@@ -10,8 +10,7 @@ class OnboardingPrivacyPage extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          //color: AppColors.background,
-          padding: EdgeInsets.only(top: 70,),
+          padding: const EdgeInsets.only(top: 70),
           child: Text(
             "Votre vote est totalement anonyme. Personne ne saura ce que vous avez répondu.",
             softWrap: true,
