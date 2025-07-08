@@ -76,7 +76,6 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
                 birthDate: _birthDate!,
               );
               if (!mounted) return;
-              // Navigation après validation
               context.go(RouteNames.main);
             } : null,
             child: Text(

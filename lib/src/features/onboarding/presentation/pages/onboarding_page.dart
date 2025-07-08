@@ -2,6 +2,8 @@ import 'package:dukoavote/src/core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../onboarding.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dukoavote/src/features/auth/presentation/providers/auth_provider.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final VoidCallback? onFinish;
@@ -15,9 +17,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _controller = PageController();
   int _currentPage = 0;
 
-  // Données temporaires pour la page de profil
-  String? _selectedGender;
-  DateTime? _birthDate;
+  // Données temporaires pour la page de profil supprimées
 
   late final List<Widget> _pages;
 
@@ -31,9 +31,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       const OnboardingReadyPage(),
       OnboardingProfilePage(
         onValidate: (gender, birthDate) {
-          _selectedGender = gender;
-          _birthDate = birthDate;
-          _finishOnboarding();
+          _finishOnboarding(gender!, birthDate!, );
         },
       ),
     ];
@@ -43,7 +41,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (_currentPage < _pages.length - 1) {
       _controller.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.ease);
     } else {
-      _finishOnboarding();
+      // On ne doit plus appeler _finishOnboarding ici
     }
   }
 
@@ -53,16 +51,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
-  void _skipOnboarding() {
-    _finishOnboarding();
-  }
-
-  Future<void> _finishOnboarding() async {
-    // Marquer l'onboarding comme terminé localement
+  Future<void> _finishOnboarding(String gender, DateTime birthDate) async {
+    int age = DateTime.now().year - birthDate.year;
+    if (DateTime.now().month < birthDate.month ||
+        (DateTime.now().month == birthDate.month && DateTime.now().day < birthDate.day)) {
+      age--;
+    }
     await OnboardingLocalStorage.markOnboardingCompleted();
-    
-    // Ici on pourrait passer les données du profil à la feature Auth plus tard
-    widget.onFinish?.call();
+    final container = ProviderScope.containerOf(context, listen: false);
+
+    try {
+      await container.read(authProvider.notifier).signInAnon(
+        gender, birthDate.toIso8601String(), age.toString());
+      if (!mounted) return;
+      widget.onFinish?.call();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur lors de la connexion anonyme. Veuillez réessayer.\n$e")),
+      );
+    }
   }
 
   @override
@@ -85,18 +93,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           fontSize: 18,
                         ),),
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
+                if (_currentPage < 4)
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                    ),
+                    onPressed: () {
+                      _controller.jumpToPage(4); // Aller à la page profil
+                    },
+                    child: Text("Passer", style: GoogleFonts.poppins(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 15,
+                          ),),
                   ),
-                  onPressed: _skipOnboarding,
-                  child: Text("Passer", style: GoogleFonts.poppins(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.normal,
-                          fontSize: 15,
-                        ),),
-                ),
               ],
             ),
             Expanded(
