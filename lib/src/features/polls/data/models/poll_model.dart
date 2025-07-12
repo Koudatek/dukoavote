@@ -14,16 +14,16 @@ class PollModel extends Poll {
 
   factory PollModel.fromMap(Map<String, dynamic> map) {
     try {
-      return PollModel(
+    return PollModel(
         id: map['id']?.toString(),
         question: map['question'] as String? ?? '',
         options: List<String>.from(map['options'] as List? ?? []),
         startDate: DateTime.parse(map['start_date'] as String? ?? DateTime.now().toIso8601String()),
         endDate: DateTime.parse(map['end_date'] as String? ?? DateTime.now().add(const Duration(days: 1)).toIso8601String()),
         isClosed: map['is_closed'] as bool? ?? false,
-        createdBy: map['created_by'] as String?,
+      createdBy: map['created_by'] as String?,
         closedReason: map['closed_reason'] as String?,
-      );
+    );
     } catch (e) {
       throw FormatException('Erreur lors du parsing du sondage: $e. Données: $map');
     }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dukoavote/src/core/routing/app_router.dart';
 import 'package:dukoavote/src/features/auth/presentation/providers/auth_provider.dart';
+import 'package:dukoavote/src/features/profile/presentation/profile_page.dart';
 
 class DukoaVoteApp extends ConsumerStatefulWidget {
   const DukoaVoteApp({super.key});
@@ -46,7 +47,7 @@ class _MainAppState extends State<MainApp> {
   final List<Widget> _pages = [
     const HomePage(),
     const Placeholder(), // Stats page (à créer)
-    const Placeholder(), // Profile page (à créer)
+    const ProfilePage(), // Profile page
   ];
 
   @override
@@ -61,8 +62,8 @@ class _MainAppState extends State<MainApp> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.textSecondary,
         items: [
           BottomNavigationBarItem(
             icon: _NavIcon(

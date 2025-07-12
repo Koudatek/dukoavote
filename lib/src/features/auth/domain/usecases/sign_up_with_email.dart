@@ -5,7 +5,7 @@ class SignUpWithEmail {
   final AuthRepository repository;
   SignUpWithEmail(this.repository);
 
-  Future<User?> call(String email, String password) {
-    return repository.signUpWithEmail(email, password);
+  Future<User?> call(String email, String password, String username) {
+    return repository.signUpWithEmail(email, password, username);
   }
 } 

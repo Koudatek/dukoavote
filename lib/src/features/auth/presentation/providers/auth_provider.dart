@@ -46,16 +46,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(user: user, loading: false);
     } catch (e) {
       state = state.copyWith(loading: false, error: e.toString());
+      rethrow; // Relancer l'exception pour que la page puisse la capturer
     }
   }
 
-  Future<void> signUp(String email, String password) async {
+  Future<void> signUp(String email, String password, String username) async {
     state = state.copyWith(loading: true, error: null);
     try {
-      final user = await signUpWithEmail(email, password);
+      final user = await signUpWithEmail(email, password, username);
       state = state.copyWith(user: user, loading: false);
     } catch (e) {
       state = state.copyWith(loading: false, error: e.toString());
+      rethrow; // Relancer l'exception pour que la page puisse la capturer
     }
   }
 

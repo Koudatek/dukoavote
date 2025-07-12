@@ -25,8 +25,6 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   void dispose() {
-    // Arrêter le rafraîchissement automatique
-    ref.read(autoRefreshPollsProvider).stopAutoRefresh();
     super.dispose();
   }
 
@@ -158,9 +156,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       );
                                     },
                               child: QuestionCard(
-                                question: poll.question,
-                                progress: progress,
-                                isClosed: poll.isClosed,
+                            question: poll.question,
+                            progress: progress,
+                            isClosed: poll.isClosed,
                               ),
                             ),
                           ),
@@ -168,11 +166,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                           
                           // Boutons de vote (toujours affichés si le sondage est ouvert)
                           if (!poll.isClosed && DateTime.now().isBefore(poll.endDate))
-                            VoteButtons(
-                              pollId: poll.id!,
+                          VoteButtons(
+                            pollId: poll.id!,
                               userId: authState.user?.id ?? '',
-                              options: poll.options,
-                            ),
+                            options: poll.options,
+                          ),
                         ],
                       ),
                     );

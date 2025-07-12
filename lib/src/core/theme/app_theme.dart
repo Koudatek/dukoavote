@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
+export 'app_colors.dart';
+export 'text_styles.dart';
+export 'button_styles.dart';
+export 'input_styles.dart';
+export 'spacing.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {
