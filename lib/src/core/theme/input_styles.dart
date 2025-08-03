@@ -7,11 +7,11 @@ class AppInputStyles {
   static InputDecoration get standard => InputDecoration(
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
-      borderSide: BorderSide(color: AppColors.progressBackground),
+      borderSide: BorderSide(color: AppColors.background),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
-      borderSide: BorderSide(color: AppColors.progressBackground),
+      borderSide: BorderSide(color: AppColors.background),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
@@ -19,17 +19,17 @@ class AppInputStyles {
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
-      borderSide: const BorderSide(color: AppColors.danger, width: 1),
+      borderSide: const BorderSide(color: AppColors.error, width: 1),
     ),
     focusedErrorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
-      borderSide: const BorderSide(color: AppColors.danger, width: 2),
+      borderSide: const BorderSide(color: AppColors.error, width: 2),
     ),
     filled: true,
     fillColor: Colors.white,
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     labelStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
-    errorStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.danger),
+    errorStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.error),
   );
 
   // Style avec icône
@@ -61,11 +61,11 @@ class AppInputStyles {
     hintText: 'Rechercher...',
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(20),
-      borderSide: BorderSide(color: AppColors.progressBackground),
+      borderSide: BorderSide(color: AppColors.background),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(20),
-      borderSide: BorderSide(color: AppColors.progressBackground),
+      borderSide: BorderSide(color: AppColors.background),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(20),

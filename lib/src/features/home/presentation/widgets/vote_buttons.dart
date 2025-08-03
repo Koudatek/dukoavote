@@ -150,7 +150,7 @@ class _VoteButtonsState extends ConsumerState<VoteButtons> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Erreur: ${e.toString().length > 50 ? e.toString().substring(0, 50) + '...' : e.toString()}',
+                          'Erreur: ${e.toString().length > 50 ? '${e.toString().substring(0, 50)}...' : e.toString()}',
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),

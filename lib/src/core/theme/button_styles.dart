@@ -15,7 +15,7 @@ class AppButtonStyles {
 
   // Bouton secondaire
   static ButtonStyle get secondary => ElevatedButton.styleFrom(
-    backgroundColor: AppColors.secondary,
+    backgroundColor: AppColors.primaryLight,
     foregroundColor: Colors.white,
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
     textStyle: AppTextStyles.buttonMedium,
@@ -25,7 +25,7 @@ class AppButtonStyles {
 
   // Bouton danger
   static ButtonStyle get danger => ElevatedButton.styleFrom(
-    backgroundColor: AppColors.danger,
+    backgroundColor: AppColors.error,
     foregroundColor: Colors.white,
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
     textStyle: AppTextStyles.buttonMedium,

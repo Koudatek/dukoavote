@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'src/src.dart';
+import 'src/core/core.dart';
+import 'src/dukoavote_app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

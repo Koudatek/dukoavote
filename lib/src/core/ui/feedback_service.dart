@@ -11,7 +11,7 @@ class FeedbackService {
   }
 
   static void showInfo(BuildContext context, String message) {
-    _showSnackBar(context, message, AppColors.info);
+    _showSnackBar(context, message, AppColors.success);
   }
 
   static void _showSnackBar(BuildContext context, String message, Color color) {

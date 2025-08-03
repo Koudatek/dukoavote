@@ -1,10 +1,5 @@
+import 'package:dukoavote/src/src.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/providers/supabase_providers.dart';
-import '../../data/datasource/vote_remote_datasource.dart';
-import '../../data/repository/vote_repository_impl.dart';
-import '../../domain/entities/vote.dart';
-import '../../domain/usecases/submit_vote.dart';
-import '../../domain/usecases/get_votes.dart';
 
 
 

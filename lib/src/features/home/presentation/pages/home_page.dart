@@ -1,9 +1,8 @@
+
 import 'package:dukoavote/src/src.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dukoavote/src/core/ui/feedback_service.dart';
-import 'package:dukoavote/src/features/auth/presentation/providers/auth_provider.dart';
 
 
 class HomePage extends ConsumerStatefulWidget {
@@ -25,6 +24,8 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   void dispose() {
+    // Arrêter le rafraîchissement automatique
+    ref.read(autoRefreshPollsProvider).stopAutoRefresh();
     super.dispose();
   }
 
@@ -42,7 +43,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     
     
     // Afficher un indicateur de chargement si l'authentification est en cours
-    if (authState.loading) {
+    if (authState.isLoading) {
       return const Scaffold(
         backgroundColor: AppColors.background,
         body: Center(
@@ -82,11 +83,24 @@ class _HomePageState extends ConsumerState<HomePage> {
             icon: const Icon(Icons.refresh),
             tooltip: 'Reset Onboarding',
             onPressed: () async {
+              // Réinitialiser complètement l'onboarding
               await OnboardingLocalStorage.resetOnboarding();
+              
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Onboarding reset !')),
+                  const SnackBar(
+                    content: Text('Onboarding réinitialisé ! Redirection...'),
+                    duration: Duration(seconds: 2),
+                  ),
                 );
+                
+                // Attendre un peu pour que l'utilisateur voie le message
+                await Future.delayed(const Duration(seconds: 2));
+                
+                if (context.mounted) {
+                  // Rediriger vers l'onboarding
+                  context.go(RouteNames.onboarding);
+                }
               }
             },
           ),
@@ -156,9 +170,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       );
                                     },
                               child: QuestionCard(
-                            question: poll.question,
-                            progress: progress,
-                            isClosed: poll.isClosed,
+                                question: poll.question,
+                                progress: progress,
+                                isClosed: poll.isClosed,
                               ),
                             ),
                           ),
@@ -166,11 +180,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                           
                           // Boutons de vote (toujours affichés si le sondage est ouvert)
                           if (!poll.isClosed && DateTime.now().isBefore(poll.endDate))
-                          VoteButtons(
-                            pollId: poll.id!,
+                            VoteButtons(
+                              pollId: poll.id!,
                               userId: authState.user?.id ?? '',
-                            options: poll.options,
-                          ),
+                              options: poll.options,
+                            ),
                         ],
                       ),
                     );

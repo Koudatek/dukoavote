@@ -80,7 +80,7 @@ class AppTextStyles {
   );
 
   static TextStyle get bodySmallInfo => bodySmall.copyWith(
-    color: AppColors.info,
+    color: AppColors.success,
     fontWeight: FontWeight.w500,
   );
 
@@ -89,8 +89,8 @@ class AppTextStyles {
     fontWeight: FontWeight.w500,
   );
 
-  static TextStyle get bodySmallDanger => bodySmall.copyWith(
-    color: AppColors.danger,
+  static TextStyle get bodySmallerror => bodySmall.copyWith(
+    color: AppColors.error,
     fontWeight: FontWeight.w500,
   );
 } 

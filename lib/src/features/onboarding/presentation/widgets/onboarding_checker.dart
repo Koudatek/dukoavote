@@ -1,6 +1,7 @@
-import 'package:dukoavote/src/src.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dukoavote/src/src.dart';
 
 class OnboardingChecker extends ConsumerStatefulWidget {
   const OnboardingChecker({super.key});
@@ -28,14 +29,13 @@ class _OnboardingCheckerState extends ConsumerState<OnboardingChecker> {
   @override
   Widget build(BuildContext context) {
     if (_hasCompletedOnboarding == null) {
-      // Affiche un écran blanc pendant la récupération
       return const SizedBox.shrink();
     }
 
     if (_hasCompletedOnboarding!) {
-      return const MainApp();
+      return const HomeWithNavigation();
     } else {
-      return const OnboardingScreen();
+      return const OnboardingPage();
     }
   }
 } 

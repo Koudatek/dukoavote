@@ -45,9 +45,9 @@ class QuestionCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 7,
-              backgroundColor: AppColors.progressBackground,
+              backgroundColor: AppColors.background,
               valueColor: AlwaysStoppedAnimation<Color>(
-                isClosed ? AppColors.danger : AppColors.primary,
+                isClosed ? AppColors.error : AppColors.primary,
               ),
             ),
           ),
@@ -63,7 +63,7 @@ class QuestionCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: isClosed ? AppColors.danger.withAlpha((0.12 * 255).toInt()) : AppColors.success.withAlpha((0.12 * 255).toInt()),
+                        color: isClosed ? AppColors.error.withAlpha((0.12 * 255).toInt()) : AppColors.success.withAlpha((0.12 * 255).toInt()),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -71,7 +71,7 @@ class QuestionCard extends StatelessWidget {
                           Icon(
                             isClosed ? Icons.lock : Icons.check_circle,
                             size: 16,
-                            color: isClosed ? AppColors.danger : AppColors.success,
+                            color: isClosed ? AppColors.error : AppColors.success,
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -79,7 +79,7 @@ class QuestionCard extends StatelessWidget {
                             style: GoogleFonts.poppins(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: isClosed ? AppColors.danger : AppColors.success,
+                              color: isClosed ? AppColors.error : AppColors.success,
                             ),
                           ),
                         ],
@@ -95,13 +95,13 @@ class QuestionCard extends StatelessWidget {
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: isClosed 
-                          ? AppColors.danger.withAlpha((0.1 * 255).toInt())
+                          ? AppColors.error.withAlpha((0.1 * 255).toInt())
                           : AppColors.primary.withAlpha((0.1 * 255).toInt()),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(
                         isClosed ? Icons.question_answer_outlined : Icons.question_answer,
-                        color: isClosed ? AppColors.danger : AppColors.primary,
+                        color: isClosed ? AppColors.error : AppColors.primary,
                         size: 24,
                       ),
                     ),
@@ -127,21 +127,21 @@ class QuestionCard extends StatelessWidget {
                     Icon(
                       isClosed ? Icons.lock_clock : Icons.access_time,
                       size: 16,
-                      color: isClosed ? AppColors.danger : Colors.grey[500],
+                      color: isClosed ? AppColors.error : Colors.grey[500],
                     ),
                     const SizedBox(width: 4),
                     Text(
                       isClosed ? 'Sondage fermé' : 'Question ouverte jusqu\'à 23h59',
                       style: GoogleFonts.poppins(
                         fontSize: 12,
-                        color: isClosed ? AppColors.danger : Colors.grey[500],
+                        color: isClosed ? AppColors.error : Colors.grey[500],
                       ),
                     ),
                     const Spacer(),
                     Icon(
                       isClosed ? Icons.visibility : Icons.arrow_forward_ios,
                       size: 14,
-                      color: isClosed ? AppColors.danger : Colors.grey[400],
+                      color: isClosed ? AppColors.error : Colors.grey[400],
                     ),
                   ],
                 ),

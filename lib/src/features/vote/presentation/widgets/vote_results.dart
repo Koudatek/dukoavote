@@ -265,7 +265,7 @@ class _VoteResultsState extends ConsumerState<VoteResults>
                   ],
                 ),
               );
-            }).toList(),
+            }),
             
             // Message si aucun vote
             if (stats.totalVotes == 0)
