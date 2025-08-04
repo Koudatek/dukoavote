@@ -1,13 +1,14 @@
 
 
-import 'package:dukoavote/src/features/polls/domain/entities/poll.dart';
-import 'package:dukoavote/src/features/polls/domain/repository/poll_repository.dart';
+import 'package:dukoavote/src/src.dart';
+import 'package:fpdart/fpdart.dart';
 
 class CreatePoll {
   final PollRepository repository;
-  CreatePoll(this.repository);
+  
+  const CreatePoll(this.repository);
 
-  Future<void> call(Poll poll) async {
-    await repository.addPoll(poll);
+  Future<Either<Failure, void>> call(Poll poll) async {
+    return await repository.addPoll(poll);
   }
 } 

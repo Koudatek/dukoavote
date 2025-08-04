@@ -5,7 +5,7 @@ class User extends Equatable {
   final String? email;
   final String? username;
   final String? role;
-  final String? age;
+  final int? age;
   final String? gender;
   final String? country;
   final String? city;
@@ -30,7 +30,7 @@ class User extends Equatable {
     String? email,
     String? username,
     String? role,
-    String? age,
+    int? age,
     String? gender,
     String? country,
     String? city,

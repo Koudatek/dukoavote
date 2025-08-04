@@ -47,23 +47,32 @@ CREATE POLICY "Users can update own profile" ON public.users
 CREATE POLICY "Enable insert for authenticated users only" ON public.users
   FOR INSERT WITH CHECK (auth.uid() = id);
 
+-- Politique pour permettre la vérification de disponibilité des noms d'utilisateur
+-- Permet à tous les utilisateurs authentifiés de vérifier la disponibilité
+CREATE POLICY "Allow username availability check" ON public.users
+  FOR SELECT USING (auth.uid() IS NOT NULL);
+
+-- Fonction pour vérifier si l'utilisateur est admin (contourne RLS)
+CREATE OR REPLACE FUNCTION check_is_admin(user_id UUID DEFAULT auth.uid())
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.users 
+    WHERE id = user_id AND role = 'admin'
+  );
+EXCEPTION
+  WHEN OTHERS THEN
+    RETURN FALSE;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Politique pour permettre aux admins de voir tous les profils
 CREATE POLICY "Admins can view all profiles" ON public.users
-  FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM public.users 
-      WHERE id = auth.uid() AND role = 'admin'
-    )
-  );
+  FOR SELECT USING (check_is_admin());
 
 -- Politique pour permettre aux admins de modifier tous les profils
 CREATE POLICY "Admins can update all profiles" ON public.users
-  FOR UPDATE USING (
-    EXISTS (
-      SELECT 1 FROM public.users 
-      WHERE id = auth.uid() AND role = 'admin'
-    )
-  );
+  FOR UPDATE USING (check_is_admin());
 
 -- Fonction pour mettre à jour updated_at automatiquement
 CREATE OR REPLACE FUNCTION update_updated_at_column()

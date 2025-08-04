@@ -8,9 +8,10 @@ class RouteNames {
   static const String onboarding = '/onboarding';
   static const String profileCompletion = '/profile-completion';
   
-  // Main app routes
+  // Main app routes with bottom navigation
   static const String home = '/home';
   static const String profile = '/profile';
+  static const String requestQuestion = '/request-question';
   
   // Future routes
   // static const String stats = '/stats';

@@ -39,11 +39,15 @@ class OnboardingLocalStorage {
 
     try {
       final birthDate = DateTime.parse(birthDateString);
+      final now = DateTime.now();
+      final age = now.year - birthDate.year - (now.month < birthDate.month || (now.month == birthDate.month && now.day < birthDate.day) ? 1 : 0);
+      
       return {
         'birthDate': birthDate,
         'gender': gender,
         'country': country,
         'username': username,
+        'age': age,
       };
     } catch (e) {
       return null;

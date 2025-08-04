@@ -1,26 +1,49 @@
-import '../../domain/entities/poll.dart';
-import '../../domain/repository/poll_repository.dart';
-import '../models/poll_model.dart';
-import '../datasource/poll_local_datasource.dart';
+import 'package:dukoavote/src/src.dart';
+import 'package:fpdart/fpdart.dart';
 
 class PollRepositoryImpl implements PollRepository {
   final PollLocalDataSource dataSource;
-  PollRepositoryImpl(this.dataSource);
+  
+  const PollRepositoryImpl(this.dataSource);
 
   @override
-  List<Poll> getAllPolls() => dataSource.getAllPolls();
-
-  @override
-  Poll? getPollById(String id) => dataSource.getPollById(id);
-
-  @override
-  Future<void> addPoll(Poll poll) async {
-    final model = poll is PollModel ? poll : PollModel.fromEntity(poll);
-    await dataSource.addPoll(model);
+  Future<Either<Failure, List<Poll>>> getAllPolls() async {
+    try {
+      final polls = dataSource.getAllPolls();
+      return Right(polls);
+    } catch (e) {
+      return Left(CacheFailure('Erreur lors de la récupération des questions: $e'));
+    }
   }
 
   @override
-  Future<void> closePoll(String id, {String? closedReason}) async {
-    await dataSource.closePoll(id, closedReason: closedReason);
+  Future<Either<Failure, Poll?>> getPollById(String id) async {
+    try {
+      final poll = dataSource.getPollById(id);
+      return Right(poll);
+    } catch (e) {
+      return Left(CacheFailure('Erreur lors de la récupération de la question: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> addPoll(Poll poll) async {
+    try {
+      final model = poll is PollModel ? poll : PollModel.fromEntity(poll);
+      await dataSource.addPoll(model);
+      return const Right(null);
+    } catch (e) {
+      return Left(CacheFailure('Erreur lors de l\'ajout de la question: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> closePoll(String id, {String? closedReason}) async {
+    try {
+      await dataSource.closePoll(id, closedReason: closedReason);
+      return const Right(null);
+    } catch (e) {
+      return Left(CacheFailure('Erreur lors de la fermeture de la question: $e'));
+    }
   }
 } 

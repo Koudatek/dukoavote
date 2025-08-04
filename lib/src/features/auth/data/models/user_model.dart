@@ -23,13 +23,31 @@ class UserModel extends User {
       email: map['email'] as String?,
       username: map['username'] as String?,
       role: map['role'] as String?,
-      age: map['age'] as String?,
+      age: _convertToInt(map['age']),
       gender: map['gender'] as String?,
       country: map['country'] as String?,
       city: map['city'] as String?,
-      birthDate: map['birth_date'] as String?,
+      birthDate: _convertToString(map['birth_date']),
       isProfileComplete: _checkProfileCompleteness(map),
     );
+  }
+
+  /// Helper method to convert various types to int
+  static int? _convertToInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value);
+    if (value is double) return value.toInt();
+    return null;
+  }
+
+  /// Helper method to convert various types to String
+  static String? _convertToString(dynamic value) {
+    if (value == null) return null;
+    if (value is String) return value;
+    if (value is int) return value.toString();
+    if (value is double) return value.toString();
+    return value.toString();
   }
 
   /// Creates a UserModel from Supabase Auth user
@@ -71,16 +89,16 @@ class UserModel extends User {
 
   /// Checks if profile data is complete
   static bool _checkProfileCompleteness(Map<String, dynamic> map) {
-    return map['age'] != null &&
+    return _convertToInt(map['age']) != null &&
            map['gender'] != null &&
            map['country'] != null &&
            map['city'] != null &&
-           map['birth_date'] != null;
+           _convertToString(map['birth_date']) != null;
   }
 
   /// Creates a copy with updated profile data
   UserModel copyWithProfile({
-    String? age,
+    int? age,
     String? gender,
     String? country,
     String? city,

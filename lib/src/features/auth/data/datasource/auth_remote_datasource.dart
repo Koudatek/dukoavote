@@ -98,6 +98,8 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     }
   }
 
+
+
   @override
   Future<Either<Failure, UserModel>> signUpWithEmail({
     required String email,

@@ -24,6 +24,35 @@ class _CreatePollPageState extends ConsumerState<CreatePollPage> {
   DateTime? _endDate;
   TimeOfDay? _endTime;
   static const int _maxOptions = 5;
+  
+  @override
+  void initState() {
+    super.initState();
+    // Écouter les changements d'état pour détecter le succès
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.listen(createPollNotifierProvider, (previous, next) {
+        next.whenData((result) {
+          result.fold(
+            (failure) {
+              // Erreur déjà gérée dans le widget
+            },
+            (_) {
+              // Succès - afficher le message et naviguer
+              if (mounted) {
+                FeedbackService.showSuccess(context, 'Sondage créé avec succès !');
+                Future.delayed(const Duration(milliseconds: 800), () {
+                  if (mounted) {
+                    Navigator.of(context).pop();
+                    ref.invalidate(pollsProvider);
+                  }
+                });
+              }
+            },
+          );
+        });
+      });
+    });
+  }
 
   @override
   void dispose() {
@@ -129,7 +158,7 @@ class _CreatePollPageState extends ConsumerState<CreatePollPage> {
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
@@ -155,7 +184,7 @@ class _CreatePollPageState extends ConsumerState<CreatePollPage> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.grey.withOpacity(0.1),
+                                color: Colors.grey.withValues(alpha: 0.1),
                                 spreadRadius: 1,
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
@@ -218,7 +247,7 @@ class _CreatePollPageState extends ConsumerState<CreatePollPage> {
                                 margin: const EdgeInsets.only(right: 8),
                                 child: Icon(
                                   Icons.help_outline,
-                                  color: Theme.of(context).primaryColor.withOpacity(0.7),
+                                  color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
                                   size: 24,
                                 ),
                               ),
@@ -310,7 +339,7 @@ class _CreatePollPageState extends ConsumerState<CreatePollPage> {
                     ),
                   const SizedBox(height: 30),
                   ElevatedButton(
-                    onPressed: createPollState.status == CreatePollStatus.loading
+                    onPressed: createPollState.isLoading
                         ? null
                         : () async {
                             if (_formKey.currentState?.validate() != true) return;
@@ -331,30 +360,34 @@ class _CreatePollPageState extends ConsumerState<CreatePollPage> {
                               createdBy: userCreatedBy,
                             );
                             await ref.read(createPollNotifierProvider.notifier).submit(poll);
-                            final state = ref.read(createPollNotifierProvider);
-                            if (state.status == CreatePollStatus.success) {
-                              FeedbackService.showSuccess(context, 'Sondage créé avec succès !');
-                              await Future.delayed(const Duration(milliseconds: 800));
-                              if (mounted) Navigator.of(context).pop();
-                              ref.invalidate(pollsProvider);
-                              ref.read(createPollNotifierProvider.notifier).reset();
-                            } else if (state.status == CreatePollStatus.error) {
-                              FeedbackService.showError(context, state.error ?? 'Erreur inconnue');
-                            }
                           },
-                    child: createPollState.status == CreatePollStatus.loading
+                    child: createPollState.isLoading
                         ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
                         : const Text('Créer le sondage'),
                   ),
-                  if (createPollState.status == CreatePollStatus.error && createPollState.error != null)
-                    Padding(
+                  // Gestion des erreurs et succès
+                  createPollState.when(
+                    data: (result) => result.fold(
+                      (failure) => Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          failure.message,
+                          style: const TextStyle(color: Colors.red),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      (_) => const SizedBox.shrink(),
+                    ),
+                    loading: () => const SizedBox.shrink(),
+                    error: (error, _) => Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(
-                        createPollState.error!,
+                        error.toString(),
                         style: const TextStyle(color: Colors.red),
                         textAlign: TextAlign.center,
                       ),
                     ),
+                  ),
                 ],
               ),
             ),

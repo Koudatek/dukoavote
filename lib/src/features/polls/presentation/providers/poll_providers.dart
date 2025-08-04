@@ -1,86 +1,58 @@
 import 'dart:async';
+import 'package:dukoavote/src/src.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/providers/supabase_providers.dart';
-import '../../data/datasource/poll_remote_repository.dart';
-import '../../domain/entities/poll.dart';
-import '../../domain/repository/poll_repository.dart';
-import '../../domain/usecases/create_poll.dart';
+import 'package:fpdart/fpdart.dart';
 
-
-
+// Repository providers
 final pollRemoteRepositoryProvider = Provider<PollRepository>((ref) {
   final client = ref.watch(supabaseClientProvider);
   return PollRemoteRepository(client);
 });
 
 final pollRepositoryProvider = Provider<PollRepository>((ref) {
-  // return PollRepositoryImpl(PollLocalDataSource());
   return ref.watch(pollRemoteRepositoryProvider);
 });
 
-final pollsProvider = FutureProvider<List<Poll>>((ref) async {
-  final repo = ref.watch(pollRepositoryProvider);
-  
-  if (repo is PollRemoteRepository) {
-    return repo.getAllPollsAsync();
-  } else {
-  return repo.getAllPolls();
-  }
+// Use case providers
+final getAllPollsProvider = Provider<GetAllPolls>((ref) {
+  final repository = ref.watch(pollRepositoryProvider);
+  return GetAllPolls(repository);
 });
 
 final createPollProvider = Provider<CreatePoll>((ref) {
-  final repo = ref.watch(pollRepositoryProvider);
-  return CreatePoll(repo);
+  final repository = ref.watch(pollRepositoryProvider);
+  return CreatePoll(repository);
 });
 
-Future<void> createPollAndRefresh(WidgetRef ref, Poll poll) async {
-  final createPoll = ref.read(createPollProvider);
-  await createPoll(poll);
-  ref.invalidate(pollsProvider);
-}
+final closePollProvider = Provider<ClosePoll>((ref) {
+  final repository = ref.watch(pollRepositoryProvider);
+  return ClosePoll(repository);
+});
 
-// --- Provider complet pour la création de sondage ---
-enum CreatePollStatus { initial, loading, success, error }
+// State providers
+final pollsProvider = FutureProvider<Either<Failure, List<Poll>>>((ref) async {
+  final useCase = ref.watch(getAllPollsProvider);
+  return useCase();
+});
 
-class CreatePollState {
-  final CreatePollStatus status;
-  final String? error;
+// Provider pour soumettre un sondage
+final createPollNotifierProvider = StateNotifierProvider<CreatePollNotifier, AsyncValue<Either<Failure, void>>>((ref) {
+  final createPoll = ref.watch(createPollProvider);
+  return CreatePollNotifier(createPoll);
+});
 
-  const CreatePollState({this.status = CreatePollStatus.initial, this.error});
+class CreatePollNotifier extends StateNotifier<AsyncValue<Either<Failure, void>>> {
+  final CreatePoll _createPoll;
 
-  CreatePollState copyWith({CreatePollStatus? status, String? error}) =>
-      CreatePollState(
-        status: status ?? this.status,
-        error: error,
-      );
-}
-
-class CreatePollNotifier extends StateNotifier<CreatePollState> {
-  final CreatePoll createPoll;
-
-  CreatePollNotifier(this.createPoll) : super(const CreatePollState());
+  CreatePollNotifier(this._createPoll) : super(const AsyncValue.data(Right(null)));
 
   Future<void> submit(Poll poll) async {
-    state = state.copyWith(status: CreatePollStatus.loading, error: null);
-    try {
-      await createPoll(poll);
-      state = state.copyWith(status: CreatePollStatus.success);
-    } catch (e) {
-      state = state.copyWith(
-        status: CreatePollStatus.error,
-        error: e.toString(),
-      );
-    }
+    state = const AsyncValue.loading();
+    
+    final result = await _createPoll(poll);
+    state = AsyncValue.data(result);
   }
-
-  void reset() => state = const CreatePollState();
 }
-
-final createPollNotifierProvider =
-    StateNotifierProvider<CreatePollNotifier, CreatePollState>((ref) {
-  final usecase = ref.watch(createPollProvider);
-  return CreatePollNotifier(usecase);
-}); 
 
 // Provider pour rafraîchir automatiquement les sondages
 final autoRefreshPollsProvider = Provider<AutoRefreshPolls>((ref) {
@@ -108,23 +80,36 @@ class AutoRefreshPolls {
 
   Future<void> _checkAndCloseExpiredPolls() async {
     try {
-      final polls = await _ref.read(pollsProvider.future);
-      final now = DateTime.now();
-      bool hasChanges = false;
+      final pollsResult = await _ref.read(pollsProvider.future);
+      
+      pollsResult.fold(
+        (failure) {
+          // Log l'erreur mais ne pas faire planter l'app
+          print('Erreur lors de la récupération des sondages: ${failure.message}');
+        },
+        (polls) async {
+          final now = DateTime.now();
+          bool hasChanges = false;
 
-      for (final poll in polls) {
-        if (!poll.isClosed && now.isAfter(poll.endDate)) {
-          // Fermer le sondage automatiquement
-          final repo = _ref.read(pollRepositoryProvider);
-          await repo.closePoll(poll.id!);
-          hasChanges = true;
-        }
-      }
+          for (final poll in polls) {
+            if (!poll.isClosed && now.isAfter(poll.endDate)) {
+              // Fermer le sondage automatiquement
+              final closePoll = _ref.read(closePollProvider);
+              final result = await closePoll(poll.id!);
+              
+              result.fold(
+                (failure) => print('Erreur lors de la fermeture du sondage: ${failure.message}'),
+                (_) => hasChanges = true,
+              );
+            }
+          }
 
-      // Rafraîchir la liste si des changements ont été effectués
-      if (hasChanges) {
-        _ref.invalidate(pollsProvider);
-      }
+          // Rafraîchir la liste si des changements ont été effectués
+          if (hasChanges) {
+            _ref.invalidate(pollsProvider);
+          }
+        },
+      );
     } catch (e) {
       // Log l'erreur mais ne pas faire planter l'app
       print('Erreur lors de la vérification des sondages expirés: $e');

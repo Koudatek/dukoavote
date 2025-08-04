@@ -1,49 +1,74 @@
-import 'package:dukoavote/src/features/polls/domain/repository/poll_repository.dart';
+import 'package:dukoavote/src/src.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../domain/entities/poll.dart';
-import '../models/poll_model.dart';
-import 'package:dukoavote/src/core/utils/app_logger.dart';
 
 class PollRemoteRepository implements PollRepository {
   final SupabaseClient client;
 
-  PollRemoteRepository(this.client);
+  const PollRemoteRepository(this.client);
 
   @override
-  Future<void> addPoll(Poll poll) async {
+  Future<Either<Failure, void>> addPoll(Poll poll) async {
     final model = poll is PollModel ? poll : PollModel.fromEntity(poll);
     final dataToInsert = model.toMap();
-    
+
+    // Récupérer l'ID de l'utilisateur connecté
+    final currentUser = client.auth.currentUser;
+    if (currentUser == null) {
+      return Left(AuthFailure("Vous devez être connecté pour créer un sondage."));
+    }
+
+    // Ajouter l'ID de l'utilisateur connecté
+    dataToInsert['created_by'] = currentUser.id;
+
     try {
       await client.from('polls').insert(dataToInsert);
+      return const Right(null);
     } catch (e, stack) {
       AppLogger.e("Erreur lors de l'insertion du sondage : $e", e, stack);
-      throw Exception("Erreur lors de la création du sondage. Veuillez réessayer.");
+      return Left(ServerFailure("Erreur lors de la création du sondage. Veuillez réessayer."));
     }
   }
 
   @override
-  Future<void> closePoll(String id, {String? closedReason}) async {
+  Future<Either<Failure, void>> closePoll(String id, {String? closedReason}) async {
     try {
       final Map<String, dynamic> updateData = {'is_closed': true};
       if (closedReason != null) {
         updateData['closed_reason'] = closedReason;
       }
       await client.from('polls').update(updateData).eq('id', id);
+      return const Right(null);
     } catch (e, stack) {
       AppLogger.e("Erreur lors de la fermeture du sondage : $e", e, stack);
-      throw Exception("Erreur lors de la fermeture du sondage. Veuillez réessayer.");
+      return Left(ServerFailure("Erreur lors de la fermeture du sondage. Veuillez réessayer."));
     }
   }
 
   @override
-  List<Poll> getAllPolls() {
-    throw UnimplementedError('Use getAllPollsAsync for remote');
+  Future<Either<Failure, List<Poll>>> getAllPolls() async {
+    try {
+      final data = await client.from('polls').select().order('id', ascending: false);
+      final polls = (data as List).map((e) => PollModel.fromMap(e)).toList();
+      return Right(polls);
+    } catch (e, stack) {
+      AppLogger.e("Erreur lors de la récupération des sondages : $e", e, stack);
+      return Left(ServerFailure("Erreur lors du chargement des sondages."));
+    }
   }
 
   @override
-  Poll? getPollById(String id) {
-    throw UnimplementedError('Use getPollByIdAsync for remote');
+  Future<Either<Failure, Poll?>> getPollById(String id) async {
+    try {
+      final data = await client.from('polls').select().eq('id', id).maybeSingle();
+      if (data == null) {
+        return const Right(null);
+      }
+      return Right(PollModel.fromMap(data));
+    } catch (e, stack) {
+      AppLogger.e("Erreur lors de la récupération du sondage : $e", e, stack);
+      return Left(ServerFailure("Erreur lors de la récupération du sondage."));
+    }
   }
 
   Future<List<Poll>> getAllPollsAsync() async {

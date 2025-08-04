@@ -1,12 +1,13 @@
 
-import '../repository/poll_repository.dart';
+import 'package:dukoavote/src/src.dart';
+import 'package:fpdart/fpdart.dart';
 
 class ClosePoll {
   final PollRepository repository;
 
-  ClosePoll(this.repository);
+  const ClosePoll(this.repository);
 
-  Future<void> call(String pollId) async {
-    await repository.closePoll(pollId);
+  Future<Either<Failure, void>> call(String pollId) async {
+    return await repository.closePoll(pollId);
   }
 } 

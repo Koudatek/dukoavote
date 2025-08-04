@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dukoavote/src/features/features.dart';
-import 'package:dukoavote/src/features/onboarding/data/onboarding_local_storage.dart';
 import 'route_names.dart';
 
-/// Router principal de l'application avec guards d'authentification
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: RouteNames.splash,
     redirect: (context, state) async {
-      // Ne pas rediriger si on est déjà sur une route valide
       if (state.matchedLocation == RouteNames.splash ||
           state.matchedLocation == RouteNames.onboarding ||
           state.matchedLocation == RouteNames.login ||
@@ -18,17 +15,15 @@ class AppRouter {
           state.matchedLocation == RouteNames.profileCompletion ||
           state.matchedLocation == RouteNames.home ||
           state.matchedLocation == RouteNames.profile) {
-        return null; // Pas de redirection
+        return null; 
       }
       
-      // Vérifier l'état de l'onboarding et de l'authentification
       final hasCompletedOnboarding = await OnboardingLocalStorage.isOnboardingCompleted();
       
       if (!hasCompletedOnboarding) {
         return RouteNames.onboarding;
       }
       
-      // Si l'onboarding est terminé, rediriger vers login
       return RouteNames.login;
     },
     routes: [
@@ -56,7 +51,7 @@ class AppRouter {
         path: RouteNames.profileCompletion,
         builder: (context, state) => const ProfileCompletionPage(),
       ),
-      // Main app routes (protected)
+
       GoRoute(
         path: RouteNames.home,
         builder: (context, state) => const HomeWithNavigation(),
@@ -64,6 +59,10 @@ class AppRouter {
       GoRoute(
         path: RouteNames.profile,
         builder: (context, state) => const ProfilePage(),
+      ),
+      GoRoute(
+        path: RouteNames.requestQuestion,
+        builder: (context, state) => const RequestQuestionPage(),
       ),
     ],
   );
@@ -126,14 +125,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       final isAuthenticated = ref.read(authIsAuthenticatedProvider);
       final hasCompletedOnboarding = await OnboardingLocalStorage.isOnboardingCompleted();
       
-      if (isAuthenticated) {
-        // User is authenticated - go directly to home
+      if (isAuthenticated && hasCompletedOnboarding) {
         context.go(RouteNames.home);
-      } else if (hasCompletedOnboarding) {
-        // User not authenticated but has completed onboarding - go to login
-        context.go(RouteNames.login);
       } else {
-        // User not authenticated and hasn't completed onboarding - go to onboarding
         context.go(RouteNames.onboarding);
       }
     }

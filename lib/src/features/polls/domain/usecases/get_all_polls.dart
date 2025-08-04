@@ -1,12 +1,12 @@
-import 'package:dukoavote/src/features/polls/domain/entities/poll.dart';
-import 'package:dukoavote/src/features/polls/domain/repository/poll_repository.dart';
-
+import 'package:dukoavote/src/src.dart';
+import 'package:fpdart/fpdart.dart';
 
 class GetAllPolls {
   final PollRepository repository;
-  GetAllPolls(this.repository);
+  
+  const GetAllPolls(this.repository);
 
-  List<Poll> call() {
-    return repository.getAllPolls();
+  Future<Either<Failure, List<Poll>>> call() async {
+    return await repository.getAllPolls();
   }
 } 

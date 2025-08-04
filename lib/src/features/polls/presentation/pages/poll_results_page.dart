@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dukoavote/src/core/core.dart';
-import '../../domain/entities/poll.dart';
-import 'package:dukoavote/src/features/home/presentation/widgets/vote_buttons.dart';
 import 'package:dukoavote/src/features/vote/presentation/widgets/vote_results.dart';
-import '../../../vote/presentation/providers/vote_provider.dart';
 
 class PollResultsPage extends ConsumerStatefulWidget {
   final Poll poll;
@@ -142,7 +139,7 @@ class _PollResultsPageState extends ConsumerState<PollResultsPage> {
                           icon: const Icon(Icons.lock_outline),
                           label: const Text('Fermer le sondage'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.danger,
+                            backgroundColor: AppColors.error,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                           ),
