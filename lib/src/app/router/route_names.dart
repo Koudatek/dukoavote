@@ -12,6 +12,8 @@ class RouteNames {
   static const String home = '/home';
   static const String profile = '/profile';
   static const String requestQuestion = '/request-question';
+  static const String createPoll = '/create-poll';
+  static const String results = '/results';
   
   // Future routes
   // static const String stats = '/stats';

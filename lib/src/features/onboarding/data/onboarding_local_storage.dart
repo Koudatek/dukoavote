@@ -110,7 +110,6 @@ class OnboardingLocalStorage {
     await prefs.setBool(_isSyncedKey, false);
   }
 
-  // Sauvegarder une donnée individuelle (pour les pages séparées)
   static Future<void> savePersonalData({
     required DateTime birthDate,
     required String gender,
@@ -128,7 +127,6 @@ class OnboardingLocalStorage {
     
     await prefs.setString(_countryKey, country);
     
-    // Marquer l'onboarding comme terminé quand toutes les données sont collectées
     final birthDateString = prefs.getString(_birthDateKey);
     final gender = prefs.getString(_genderKey);
     

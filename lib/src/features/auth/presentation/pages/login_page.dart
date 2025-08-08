@@ -2,10 +2,7 @@ import 'package:dukoavote/src/src.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:dukoavote/src/core/routing/route_names.dart';
-import 'package:dukoavote/src/features/onboarding/data/onboarding_local_storage.dart';
 
-/// Page de connexion intégrée dans l'onboarding
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
@@ -77,7 +74,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
     
-    ref.read(authProvider.notifier).clearError();
+    //ref.read(authProvider.notifier).clearError();
     
     final result = await ref.read(authProvider.notifier).signIn(
       email: _emailController.text.trim(),
@@ -113,7 +110,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
   Future<void> _handleSignUp() async {
     if (!_formKey.currentState!.validate()) return;
     
-    ref.read(authProvider.notifier).clearError();
+    //ref.read(authProvider.notifier).clearError();
     
     // Récupérer les données de l'onboarding non synchronisées
     final onboardingData = await OnboardingLocalStorage.getUnsyncedOnboardingData();
@@ -156,9 +153,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
   }
 
   Future<void> _handleGoogleSignIn() async {
-    ref.read(authProvider.notifier).clearError();
+    //ref.read(authProvider.notifier).clearError();
     
-    final result = await ref.read(authProvider.notifier).signInWithGoogleOAuth();
+    final result = await ref.read(authProvider.notifier).signInWithGoogle();
     
     result.fold(
       (failure) {
@@ -182,8 +179,8 @@ class _LoginPageState extends ConsumerState<LoginPage>
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref.watch(authLoadingProvider);
-    final error = ref.watch(authErrorProvider);
+    final isLoading = ref.watch(authProvider).isLoading;
+    final error = ref.watch(authProvider).failure;
 
     return Scaffold(
       backgroundColor: AppColors.onboardingBackground,
@@ -237,7 +234,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
                     ),
                     
                     const SizedBox(height: 40),
-                    
+                    /*
                     // Error display
                     if (error != null) ...[
                       AppErrorWidget(
@@ -246,7 +243,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
                       ),
                       const SizedBox(height: 24),
                     ],
-                    
+                    */
                     // Username field (only for sign up)
                     if (_isSignUp) ...[
                       TextFormField(

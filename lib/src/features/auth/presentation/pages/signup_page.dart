@@ -2,8 +2,6 @@ import 'package:dukoavote/src/src.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:dukoavote/src/core/routing/route_names.dart';
-import 'package:dukoavote/src/features/onboarding/data/onboarding_local_storage.dart';
 
 /// Page d'inscription dédiée
 class SignupPage extends ConsumerStatefulWidget {
@@ -74,7 +72,7 @@ class _SignupPageState extends ConsumerState<SignupPage>
   Future<void> _handleSignUp() async {
     if (!_formKey.currentState!.validate()) return;
     
-    ref.read(authProvider.notifier).clearError();
+    //ref.read(authProvider.notifier).clearError();
     
     // Récupérer les données de l'onboarding non synchronisées
     final onboardingData = await OnboardingLocalStorage.getUnsyncedOnboardingData();
@@ -157,7 +155,7 @@ class _SignupPageState extends ConsumerState<SignupPage>
                         Text(
                           'Rejoignez la communauté DukuaVote',
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .7),
                           ),
                         ),
                       ],

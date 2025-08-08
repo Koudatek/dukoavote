@@ -12,14 +12,13 @@ class PollRemoteRepository implements PollRepository {
     final model = poll is PollModel ? poll : PollModel.fromEntity(poll);
     final dataToInsert = model.toMap();
 
-    // Récupérer l'ID de l'utilisateur connecté
-    final currentUser = client.auth.currentUser;
-    if (currentUser == null) {
+    // Utiliser l'ID de l'utilisateur depuis l'objet Poll
+    if (poll.createdBy == null || poll.createdBy!.isEmpty) {
       return Left(AuthFailure("Vous devez être connecté pour créer un sondage."));
     }
 
     // Ajouter l'ID de l'utilisateur connecté
-    dataToInsert['created_by'] = currentUser.id;
+    dataToInsert['created_by'] = poll.createdBy;
 
     try {
       await client.from('polls').insert(dataToInsert);

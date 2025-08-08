@@ -67,7 +67,7 @@ class _RequestQuestionPageState extends ConsumerState<RequestQuestionPage> {
         throw Exception('Utilisateur non connecté');
       }
       
-             final result = await ref.read(submitPollRequestNotifierProvider.notifier).submitRequest(
+             await ref.read(submitPollRequestNotifierProvider.notifier).submitRequest(
          userId,
          question,
          options,

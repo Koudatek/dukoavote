@@ -39,7 +39,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       result.fold(
         (failure) {
           // En cas d'erreur, on ne programme pas d'alarmes
-          AppLogger.e('Erreur lors du chargement des sondages: ${(failure as Failure).message}');
+          AppLogger.e('Erreur lors du chargement des sondages: ${(failure).message}');
         },
         (polls) {
           final repo = ref.read(pollRepositoryProvider);
@@ -81,9 +81,57 @@ class _HomePageState extends ConsumerState<HomePage> {
         elevation: 0,
         actions: [
           IconButton(
+            icon: const Icon(Icons.add),
+            tooltip: 'Créer un sondage',
+            onPressed: () {
+              context.go(RouteNames.createPoll);
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.analytics),
+            tooltip: 'Test Page Résultats',
+            onPressed: () {
+              // Test de navigation vers la page de résultats
+              final userId = authState.user?.id ?? '';
+              if (userId.isNotEmpty) {
+                context.go(
+                  '${RouteNames.results}?pollId=test-poll-id&userId=$userId',
+                );
+              } else {
+                // Test sans utilisateur connecté
+                context.go(
+                  '${RouteNames.results}?pollId=test-poll-id',
+                );
+              }
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.error_outline),
+            tooltip: 'Test Page Erreur',
+            onPressed: () {
+              // Test de navigation vers la page d'erreur
+              context.go(
+                '${RouteNames.results}?error=Sondage introuvable',
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.bar_chart),
             onPressed: () {
               // Navigation vers les stats
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.person),
+            tooltip: 'Info Utilisateur',
+            onPressed: () {
+              // Test affichage des infos utilisateur
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('User ID: ${authState.user?.id ?? 'null'}\nEmail: ${authState.user?.email ?? 'null'}\nAuthenticated: ${/*authState.isAuthenticated*/""}'),
+                  duration: const Duration(seconds: 3),
+                ),
+              );
             },
           ),
           IconButton(
@@ -135,7 +183,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    (failure as Failure).message,
+                    (failure).message,
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       color: Colors.grey[600],
@@ -189,15 +237,18 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 borderRadius: BorderRadius.circular(12),
                                 onTap: poll.isClosed
                                     ? () {
-                                        // Navigation vers la page de résultats
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (_) => PollResultsPage(
-                                              poll: poll,
-                                              userId: authState.user?.id ?? '',
-                                            ),
-                                          ),
-                                        );
+                                        // Navigation vers la page de résultats avec GoRouter
+                                        if (poll.id != null && poll.id!.isNotEmpty) {
+                                          context.go(
+                                            '${RouteNames.results}?pollId=${poll.id}&userId=${authState.user?.id ?? ''}',
+                                            extra: poll,
+                                          );
+                                        } else {
+                                          // Gérer le cas où l'ID du sondage est invalide
+                                          context.go(
+                                            '${RouteNames.results}?error=Sondage invalide',
+                                          );
+                                        }
                                       }
                                     : () {
                                         // Affiche une notification informative si le sondage n'est pas fermé
@@ -237,7 +288,15 @@ class _HomePageState extends ConsumerState<HomePage> {
           },
         ),
       ),
-      // FloatingActionButton supprimé car maintenant accessible via la bottom navigation
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          context.go(RouteNames.createPoll);
+        },
+        icon: const Icon(Icons.add),
+        label: const Text('Créer un sondage'),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+      ),
     );
   }
 

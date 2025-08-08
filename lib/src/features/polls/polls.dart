@@ -1,4 +1,3 @@
-// Polls feature exports
 
 // Data layer
 export 'data/datasource/poll_local_datasource.dart';
@@ -24,6 +23,9 @@ export 'domain/usecases/reject_poll_request.dart';
 // Presentation layer
 export 'presentation/pages/create_poll_page.dart';
 export 'presentation/pages/poll_results_page.dart';
+export 'presentation/pages/resultats_page.dart';
+export 'presentation/pages/results_error_page.dart';
+export 'presentation/pages/results_test_data.dart';
 export 'presentation/pages/request_question_page.dart';
 export 'presentation/pages/my_questions_page.dart';
 export 'presentation/providers/poll_providers.dart';

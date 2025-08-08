@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:dukoavote/src/core/routing/route_names.dart';
+import 'package:dukoavote/src/app/router/route_names.dart';
 import 'package:dukoavote/src/core/theme/app_colors.dart';
 import 'package:dukoavote/src/features/onboarding/data/services/location_service.dart';
 import 'package:dukoavote/src/features/onboarding/data/onboarding_local_storage.dart';
@@ -196,7 +196,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
   Future<void> _checkUsernameAvailability(String username) async {
     if (username.length < 3) return;
     
-    final result = await ref.read(checkUsernameAvailabilityProvider).call(username);
+    final result = await ref.read(authProvider.notifier).checkUsernameAvailability.call(username);
     result.fold(
       (failure) {
         // En cas d'erreur, on considère que le nom d'utilisateur n'est pas disponible
@@ -833,7 +833,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
   }
 
   Widget _buildNavigationButtons() {
-    final currentData = _onboardingPages[_currentPage];
     final isNextButtonEnabled = _isNextButtonEnabled();
     
     return Row(

@@ -1,5 +1,8 @@
+import 'package:dukoavote/src/core/core.dart';
+import 'package:dukoavote/src/features/auth/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../domain/entities/poll.dart';
 import '../providers/poll_providers.dart';
 import 'package:dukoavote/src/core/ui/feedback_service.dart';
@@ -42,7 +45,7 @@ class _CreatePollPageState extends ConsumerState<CreatePollPage> {
                 FeedbackService.showSuccess(context, 'Sondage créé avec succès !');
                 Future.delayed(const Duration(milliseconds: 800), () {
                   if (mounted) {
-                    Navigator.of(context).pop();
+                    context.go('/home');
                     ref.invalidate(pollsProvider);
                   }
                 });
@@ -134,7 +137,13 @@ class _CreatePollPageState extends ConsumerState<CreatePollPage> {
     final createPollState = ref.watch(createPollNotifierProvider);
     final authState = ref.watch(authProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Créer un sondage')),
+      appBar: AppBar(
+        title: const Text('Créer un sondage'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () => context.go('/home'),
+        ),
+      ),
       body: Center(
         child: Card(
           elevation: 4,
@@ -345,11 +354,17 @@ class _CreatePollPageState extends ConsumerState<CreatePollPage> {
                             if (_formKey.currentState?.validate() != true) return;
                             final start = _combineDateTime(_startDate, _startTime) ?? DateTime.now();
                             final end = _combineDateTime(_endDate, _endTime) ?? DateTime.now().add(const Duration(days: 1));
-                            // Utiliser l'email s'il existe et n'est pas vide, sinon utiliser l'ID
-                            final userEmail = authState.user?.email;
-                            final userCreatedBy = (userEmail != null && userEmail.isNotEmpty) 
-                                ? userEmail 
-                                : authState.user?.id;
+                            // Utiliser l'ID de l'utilisateur
+                            final userCreatedBy = authState.user?.id;
+                            
+                            // Debug: afficher les informations de l'utilisateur
+                            AppLogger.d('Création de sondage - User ID: ${authState.user?.id}');
+                            AppLogger.d('Création de sondage - User Email: ${authState.user?.email}');
+                            
+                            if (userCreatedBy == null || userCreatedBy.isEmpty) {
+                              FeedbackService.showError(context, 'Erreur: Utilisateur non connecté');
+                              return;
+                            }
                             
                             final poll = Poll(
                               question: _questionController.text.trim(),

@@ -1,10 +1,8 @@
-import 'package:dukoavote/src/core/ui/feedback_service.dart';
 import 'package:dukoavote/src/features/features.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dukoavote/src/core/core.dart';
-import 'package:dukoavote/src/features/vote/presentation/widgets/vote_results.dart';
 
 class PollResultsPage extends ConsumerStatefulWidget {
   final Poll poll;
@@ -24,7 +22,6 @@ class _PollResultsPageState extends ConsumerState<PollResultsPage> {
   @override
   void initState() {
     super.initState();
-    // Charger les votes pour ce sondage au démarrage
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(voteProvider.notifier).loadVotes(widget.poll.id!);
     });
@@ -73,7 +70,6 @@ class _PollResultsPageState extends ConsumerState<PollResultsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Statut du sondage
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(

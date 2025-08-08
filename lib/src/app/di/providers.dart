@@ -1,0 +1,1 @@
+import '../../core/supabase/supabase_client_provider.dart';

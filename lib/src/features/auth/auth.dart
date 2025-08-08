@@ -25,3 +25,4 @@ export 'presentation/pages/login_page.dart';
 export 'presentation/pages/signup_page.dart';
 
 export 'presentation/providers/auth_provider.dart';
+export 'presentation/providers/auth_state.dart';

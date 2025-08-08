@@ -28,7 +28,6 @@ class _CircularTransitionWidgetState extends State<CircularTransitionWidget>
   late AnimationController _rotationController;
   late AnimationController _scaleController;
   late Animation<double> _rotationAnimation;
-  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
@@ -52,13 +51,6 @@ class _CircularTransitionWidgetState extends State<CircularTransitionWidget>
       curve: Curves.easeInOutCubic,
     ));
     
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.8,
-    ).animate(CurvedAnimation(
-      parent: _scaleController,
-      curve: Curves.easeInOut,
-    ));
   }
 
   @override

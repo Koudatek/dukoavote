@@ -16,15 +16,6 @@ class _DukoaVoteAppState extends ConsumerState<DukoaVoteApp> {
   @override
   void initState() {
     super.initState();
-    _initializeApp();
-  }
-
-  /// Initialise l'application au démarrage
-  Future<void> _initializeApp() async {
-    // Charger l'utilisateur connecté au démarrage
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(authProvider.notifier).loadCurrentUser();
-    });
   }
 
   @override

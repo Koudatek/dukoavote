@@ -5,7 +5,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:dukoavote/src/core/core.dart';
 import '../models/user_model.dart';
-import '../../../../core/utils/app_logger.dart';
 
 /// Remote datasource for authentication operations
 /// Uses Either for functional error handling
@@ -180,14 +179,13 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       const webClientId = '<web client ID that you registered on Google Cloud, for example my-web.apps.googleusercontent.com>';
       const iosClientId = '<iOS client ID that you registered on Google Cloud, for example my-ios.apps.googleusercontent.com>';
 
-      // Initialiser Google Sign-In avec la nouvelle API
+      
       await GoogleSignIn.instance.initialize(
         clientId: iosClientId,
         serverClientId: webClientId,
       );
 
-      // Utiliser Supabase OAuth direct pour Google (plus simple avec la nouvelle API)
-      final response = await client.auth.signInWithOAuth(
+      await client.auth.signInWithOAuth(
         OAuthProvider.google,
         redirectTo: 'io.supabase.flutter://login-callback/',
       );

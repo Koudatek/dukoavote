@@ -79,7 +79,7 @@ class _ProfileCompletionPageState extends ConsumerState<ProfileCompletionPage>
       });
     }
   }
-
+/*
   Future<void> _completeProfile() async {
     if (!_formKey.currentState!.validate()) return;
     
@@ -118,11 +118,11 @@ class _ProfileCompletionPageState extends ConsumerState<ProfileCompletionPage>
       },
     );
   }
-
+*/
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref.watch(authLoadingProvider);
-    final error = ref.watch(authErrorProvider);
+    final isLoading = ref.watch(authProvider).isLoading;
+    final error = ref.watch(authProvider).failure;
 
     return Scaffold(
       backgroundColor: AppColors.onboardingBackground,
@@ -178,7 +178,7 @@ class _ProfileCompletionPageState extends ConsumerState<ProfileCompletionPage>
                     ),
                     
                     const SizedBox(height: 32),
-                    
+                    /*
                     // Error display
                     if (error != null) ...[
                       AppErrorWidget(
@@ -186,7 +186,7 @@ class _ProfileCompletionPageState extends ConsumerState<ProfileCompletionPage>
                         onRetry: () => ref.read(authProvider.notifier).retry(),
                       ),
                       const SizedBox(height: 24),
-                    ],
+                    ],*/
                     
                     // Username field
                     TextFormField(
@@ -290,7 +290,8 @@ class _ProfileCompletionPageState extends ConsumerState<ProfileCompletionPage>
                       ),
                     ),
                     const SizedBox(height: 32),
-                    
+                    //TODO : ........A faire........
+                   /* 
                     // Complete profile button
                     ElevatedButton(
                       onPressed: isLoading ? null : _completeProfile,
@@ -308,6 +309,7 @@ class _ProfileCompletionPageState extends ConsumerState<ProfileCompletionPage>
                               style: TextStyle(fontSize: 16),
                             ),
                     ),
+                    */
                     const SizedBox(height: 16),
                     
                                          // Skip button

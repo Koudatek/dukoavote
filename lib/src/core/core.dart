@@ -2,18 +2,17 @@
 
 // Configuration
 export 'config/env_config.dart';
-export 'config/supabase_config.dart';
 
 // Error Handling
 export 'error/error_handler.dart';
 export 'error/failures.dart';
 
 // Infrastructure
-export 'infrastructure/providers/supabase_providers.dart';
+export 'supabase/supabase_client_provider.dart';
 
 // Routing
-export 'routing/app_router.dart';
-export 'routing/route_names.dart';
+export '../app/router/app_router.dart';
+export '../app/router/route_names.dart';
 
 // Theme
 export 'theme/app_colors.dart';

@@ -1,4 +1,3 @@
-import 'package:dukoavote/src/features/onboarding/domain/entities/onboarding_data.dart';
 import 'package:dukoavote/src/features/onboarding/domain/repository/onboarding_repository.dart';
 
 /// Use case pour synchroniser les données d'onboarding avec Supabase
